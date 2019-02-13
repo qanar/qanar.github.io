@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript">		
+		var radius = 50; //change this if needed, how far around you do you want to find events?
+		
+		class Event {
+			constructor(store, name, date_start, chainbound) {
+				this.store = store;
+				this.name = name;
+				this.date_start = date_start;
+				this.chainbound = chainbound;
+			}
+		}
+		
+		function load() {
+			console.log("load()");
+			navigator.geolocation.getCurrentPosition(usePosition);
+		}
+		
+		function usePosition(position) {
+			console.log("usePosition()");			
+			if (navigator.geolocation) {
+				url = "https://retailers-backend.asmodeena.com/api/v1/stores/?location=" + position.coords.latitude + "," + position.coords.longitude + "&radius=" + radius;
+				doRestCall(url);
+			} else { 
+				var demo = document.getElementById("demo");
+				demo.innerHTML = "Need to see your location.";
+			}
+		}
+		
+		const doRestCall = async () => {
+			console.log("doRestCall()");			
+			const response = await fetch(url);
+			const myJson = await response.json();
+			var events = processJson(myJson);
+			sendToOutput(events);
+		}
+		
+		function sendToOutput(events) {
+			console.log("sendToOutput()");
+			var demo = document.getElementById("demo");
+			
+			var tbl = document.createElement('table');
+			tbl.style.width = '100%';
+			tbl.setAttribute('border', '1');
+			
+			var tbdy = document.createElement('tbody');
+			var tr = document.createElement('tr');
+			var name = document.createElement('th');
+			name.appendChild(document.createTextNode("Name"));
+			tr.appendChild(name);
+			
+			var store = document.createElement('th');
+			store.appendChild(document.createTextNode("Store"));
+			tr.appendChild(store);
+			
+			var date_start = document.createElement('th');
+			date_start.appendChild(document.createTextNode("Date"));
+			tr.appendChild(date_start);
+			
+			var chainbound = document.createElement('th');
+			chainbound.appendChild(document.createTextNode("Chainbound"));
+			tr.appendChild(chainbound);
+			tbdy.appendChild(tr);
+			
+			for (var i = 0; i < events.length; i++) {
+				var event = events[i];
+				var tr = document.createElement('tr');
+				var name = document.createElement('td');
+				name.appendChild(document.createTextNode(event.name));
+				tr.appendChild(name);
+				
+				var store = document.createElement('td');
+				store.appendChild(document.createTextNode(event.store));
+				tr.appendChild(store);
+				
+				var date_start = document.createElement('td');
+				var date = new Date(event.date_start);
+				var realMonth = date.getMonth() + 1;
+				var txtDate =  
+					(date.getDate() < 10 ? "0" : "") + date.getDate() + "/" + 
+					(realMonth < 10 ? "0" : "") + realMonth + "/" + 
+					date.getFullYear() + " " + 
+					(date.getHours() < 10 ? "0" : "") + date.getHours() + ":" + 
+					(date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
+				date_start.appendChild(document.createTextNode(txtDate));
+				tr.appendChild(date_start);
+				
+				var chainbound = document.createElement('td');
+				chainbound.appendChild(document.createTextNode(event.chainbound));
+				tr.appendChild(chainbound);
+				
+				tbdy.appendChild(tr);
+			}
+			tbl.appendChild(tbdy);
+			demo.appendChild(tbl)
+			
+		}
+		
+		function processJson(json) {
+			console.log("processJson()");
+			var list = new Array();
+			for(var i = 0; i < json.results.length; i++) {
+				var store = json.results[i];
+				for(var j = 0; j < store.events.length; j++) {
+					var event = store.events[j];
+					list[list.length] = new Event(store.name, 
+					                         event.name, 
+										     event.date_start, 
+										     event.event_type == 1);
+				}
+			}
+			
+			list.sort(function (a, b) {
+				return ('' + a.date_start).localeCompare(b.date_start);
+			});
+			return list;
+		}
+		
+		var url = '';
+		window.onload = load;
+	</script>
+</head>
+
+<body>
+	<div id="demo"></div>
+</body>
+</html>
