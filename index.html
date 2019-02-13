@@ -5,8 +5,9 @@
 		var radius = 50; //change this if needed, how far around you do you want to find events?
 		
 		class Event {
-			constructor(store, name, date_start, chainbound) {
+			constructor(store, city, name, date_start, chainbound) {
 				this.store = store;
+				this.city = city;
 				this.name = name;
 				this.date_start = date_start;
 				this.chainbound = chainbound;
@@ -55,6 +56,10 @@
 			store.appendChild(document.createTextNode("Store"));
 			tr.appendChild(store);
 			
+			var city = document.createElement('th');
+			city.appendChild(document.createTextNode("City"));
+			tr.appendChild(city);
+			
 			var date_start = document.createElement('th');
 			date_start.appendChild(document.createTextNode("Date"));
 			tr.appendChild(date_start);
@@ -74,6 +79,10 @@
 				var store = document.createElement('td');
 				store.appendChild(document.createTextNode(event.store));
 				tr.appendChild(store);
+				
+				var city = document.createElement('td');
+				city.appendChild(document.createTextNode(event.city));
+				tr.appendChild(city);
 				
 				var date_start = document.createElement('td');
 				var date = new Date(event.date_start);
@@ -105,10 +114,12 @@
 				var store = json.results[i];
 				for(var j = 0; j < store.events.length; j++) {
 					var event = store.events[j];
-					list[list.length] = new Event(store.name, 
-					                         event.name, 
-										     event.date_start, 
-										     event.event_type == 1);
+					list[list.length] = new Event(
+					                        store.name, 
+											store.city,
+					                        event.name, 
+										    event.date_start, 
+										    event.event_type == 1);
 				}
 			}
 			
