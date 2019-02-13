@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script type="text/javascript">		
-		var radius = 50; //change this if needed, how far around you do you want to find events?
+	<script type="text/javascript">	
+		var url = new URL(window.location.href);
+		var radius = url.searchParams.get("radius");
+		if (radius == null) {
+			radius = 50;
+		}
+		console.log(radius);
 		
 		class Event {
 			constructor(store, city, name, date_start, chainbound) {
