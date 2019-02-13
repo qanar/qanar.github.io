@@ -7,7 +7,6 @@
 		if (radius == null) {
 			radius = 50;
 		}
-		console.log(radius);
 		
 		class Event {
 			constructor(store, city, name, date_start, chainbound) {
@@ -17,6 +16,13 @@
 				this.date_start = date_start;
 				this.chainbound = chainbound;
 			}
+		}
+		
+		function getLang() {
+			if (navigator.languages != undefined) 
+				return navigator.languages[0]; 
+			else 
+				return navigator.language;
 		}
 		
 		function load() {
@@ -91,14 +97,7 @@
 				
 				var date_start = document.createElement('td');
 				var date = new Date(event.date_start);
-				var realMonth = date.getMonth() + 1;
-				var txtDate =  
-					(date.getDate() < 10 ? "0" : "") + date.getDate() + "/" + 
-					(realMonth < 10 ? "0" : "") + realMonth + "/" + 
-					date.getFullYear() + " " + 
-					(date.getHours() < 10 ? "0" : "") + date.getHours() + ":" + 
-					(date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
-				date_start.appendChild(document.createTextNode(txtDate));
+				date_start.appendChild(document.createTextNode(date.toLocaleString(getLang(), {})));
 				tr.appendChild(date_start);
 				
 				var chainbound = document.createElement('td');
@@ -133,6 +132,8 @@
 			});
 			return list;
 		}
+		
+		console.log(getLang());
 		
 		var url = '';
 		window.onload = load;
