@@ -92,7 +92,7 @@
 				tr.appendChild(name);
 				
 				var type = document.createElement('td');
-				type.appendChild(document.createTextNode(event.type));
+				type.appendChild(document.createTextNode(event.type != null ? event.type : ""));
 				tr.appendChild(type);
 			
 				var store = document.createElement('td');
