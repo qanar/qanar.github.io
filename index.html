@@ -89,7 +89,7 @@
 				
 				var name = document.createElement('td');
 				console.log(event);
-				if (link == null) {
+				if (event.link == null) {
 					name.appendChild(document.createTextNode(event.name));
 				} else {
 					name.appendChild(document.createTextNode("<a href=\"" + event.link + "\">" + event.name + "</a>"));
