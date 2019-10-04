@@ -9,12 +9,12 @@
 		}
 		
 		class Event {
-			constructor(store, city, name, date_start, chainbound) {
+			constructor(store, city, name, date_start, type) {
 				this.store = store;
 				this.city = city;
 				this.name = name;
 				this.date_start = date_start;
-				this.chainbound = chainbound;
+				this.type = type;
 			}
 		}
 		
@@ -59,9 +59,14 @@
 			
 			var tbdy = document.createElement('tbody');
 			var tr = document.createElement('tr');
+			
 			var name = document.createElement('th');
 			name.appendChild(document.createTextNode("Name"));
 			tr.appendChild(name);
+			
+			var type = document.createElement('th');
+			type.appendChild(document.createTextNode("Event Series"));
+			tr.appendChild(type);
 			
 			var store = document.createElement('th');
 			store.appendChild(document.createTextNode("Store"));
@@ -80,10 +85,16 @@
 			for (var i = 0; i < events.length; i++) {
 				var event = events[i];
 				var tr = document.createElement('tr');
+				
 				var name = document.createElement('td');
+				console.log(event);
 				name.appendChild(document.createTextNode(event.name));
 				tr.appendChild(name);
 				
+				var type = document.createElement('td');
+				type.appendChild(document.createTextNode(event.type));
+				tr.appendChild(type);
+			
 				var store = document.createElement('td');
 				store.appendChild(document.createTextNode(event.store));
 				tr.appendChild(store);
@@ -116,7 +127,7 @@
 								store.city,
 					                        event.name, 
 								event.date_start, 
-								event.event_type == 1);
+								event.event_series);
 				}
 			}
 			
