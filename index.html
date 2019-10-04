@@ -75,11 +75,6 @@
 			date_start.appendChild(document.createTextNode("Date"));
 			tr.appendChild(date_start);
 			
-			var chainbound = document.createElement('th');
-			chainbound.appendChild(document.createTextNode("Chainbound"));
-			tr.appendChild(chainbound);
-			tbdy.appendChild(tr);
-			
 			for (var i = 0; i < events.length; i++) {
 				var event = events[i];
 				var tr = document.createElement('tr');
@@ -100,10 +95,6 @@
 				date_start.appendChild(document.createTextNode(date.toLocaleString(getLang(), {})));
 				tr.appendChild(date_start);
 				
-				var chainbound = document.createElement('td');
-				chainbound.appendChild(document.createTextNode(event.chainbound));
-				tr.appendChild(chainbound);
-				
 				tbdy.appendChild(tr);
 			}
 			tbl.appendChild(tbdy);
@@ -120,10 +111,10 @@
 					var event = store.events[j];
 					list[list.length] = new Event(
 					                        store.name, 
-											store.city,
+								store.city,
 					                        event.name, 
-										    event.date_start, 
-										    event.event_type == 1);
+								event.date_start, 
+								event.event_type == 1);
 				}
 			}
 			
