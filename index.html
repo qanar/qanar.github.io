@@ -2,161 +2,150 @@
 <html>
 <head
   <link rel="stylesheet" href="styles.css">
-	<script type="text/javascript">	
-		var url = new URL(window.location.href);
-		var radius = url.searchParams.get("radius");
-		if (radius == null) {
-			radius = 50;
-		}
+  <script type="text/javascript">	
+	var url = new URL(window.location.href);
+	var radius = url.searchParams.get("radius");
+	if (radius == null) {
+		radius = 50;
+	}
 		
-		class Event {
-			constructor(store, city, name, date_start, type, link) {
-				this.store = store;
-				this.city = city;
-				this.name = name;
-				this.date_start = date_start;
-				this.type = type;
-				this.link = link;
-			}
+	class Event {
+		constructor(store, city, name, date_start, type, link) {
+			this.store = store;
+			this.city = city;
+			this.name = name;
+			this.date_start = date_start;
+			this.type = type;
+			this.link = link;
 		}
+	}
 		
-		function getLang() {
-			if (navigator.languages != undefined) 
-				return navigator.languages[0]; 
-			else 
-				return navigator.language;
+	function getLang() {
+		if (navigator.languages != undefined) 
+			return navigator.languages[0]; 
+		else 
+			return navigator.language;
+	}
+		
+	function load() {
+		navigator.geolocation.getCurrentPosition(usePosition);
+	}
+		
+	function usePosition(position) {		
+		if (navigator.geolocation) {
+			url = "https://retailers-backend.asmodeena.com/api/v1/stores/?location=" + position.coords.latitude + "," + position.coords.longitude + "&radius=" + radius;
+			doRestCall(url);
+		} else { 
+			var main = document.getElementById("main");
+			main.innerHTML = "Need to see your location.";
 		}
+	}
 		
-		function load() {
-			console.log("load()");
-			navigator.geolocation.getCurrentPosition(usePosition);
-		}
+	const doRestCall = async () => {			
+		const response = await fetch(url);
+		const myJson = await response.json();
+		var events = processJson(myJson);
+		sendToOutput(events);
+	}
 		
-		function usePosition(position) {
-			console.log("usePosition()");			
-			if (navigator.geolocation) {
-				url = "https://retailers-backend.asmodeena.com/api/v1/stores/?location=" + position.coords.latitude + "," + position.coords.longitude + "&radius=" + radius;
-				doRestCall(url);
-			} else { 
-				var demo = document.getElementById("demo");
-				demo.innerHTML = "Need to see your location.";
-			}
-		}
-		
-		const doRestCall = async () => {
-			console.log("doRestCall()");			
-			const response = await fetch(url);
-			const myJson = await response.json();
-			var events = processJson(myJson);
-			sendToOutput(events);
-		}
-		
-		function sendToOutput(events) {
-			console.log("sendToOutput()");
-			var demo = document.getElementById("demo");
+	function sendToOutput(events) {
+		var main = document.getElementById("main");
 			
-			var tbl = document.createElement('table');
-			tbl.style.width = '100%';
-			tbl.setAttribute('border', '1');
+		var tbl = document.createElement('table');
 			
-			var tbdy = document.createElement('tbody');
+		var tbdy = document.createElement('tbody');
+		var tr = document.createElement('tr');
+		
+		var name = document.createElement('th');
+		name.appendChild(document.createTextNode("Name"));
+		tr.appendChild(name);
+			
+		var type = document.createElement('th');
+		type.appendChild(document.createTextNode("Event Series"));
+		tr.appendChild(type);
+			
+		var store = document.createElement('th');
+		store.appendChild(document.createTextNode("Store"));
+		tr.appendChild(store);
+			
+		var city = document.createElement('th');
+		city.appendChild(document.createTextNode("City"));
+		tr.appendChild(city);
+			
+		var date_start = document.createElement('th');
+		date_start.appendChild(document.createTextNode("Date"));
+		tr.appendChild(date_start);
+			
+		tbdy.appendChild(tr);
+			
+		for (var i = 0; i < events.length; i++) {
+			var event = events[i];
 			var tr = document.createElement('tr');
 			
-			var name = document.createElement('th');
-			name.appendChild(document.createTextNode("Name"));
+			var name = document.createElement('td');
+			if (event.link == "") {
+				name.appendChild(document.createTextNode(event.name));
+			} else {
+				var a = document.createElement('a');
+				a.appendChild(document.createTextNode(event.name));
+				a.title = event.name;
+				a.href = event.link;
+				document.body.appendChild(a);
+				name.appendChild(a);
+			}
 			tr.appendChild(name);
-			
-			var type = document.createElement('th');
-			type.appendChild(document.createTextNode("Event Series"));
+				
+			var type = document.createElement('td');
+			type.appendChild(document.createTextNode(event.type != null ? event.type : ""));
 			tr.appendChild(type);
 			
-			var store = document.createElement('th');
-			store.appendChild(document.createTextNode("Store"));
+			var store = document.createElement('td');
+			store.appendChild(document.createTextNode(event.store));
 			tr.appendChild(store);
 			
-			var city = document.createElement('th');
-			city.appendChild(document.createTextNode("City"));
+			var city = document.createElement('td');
+			city.appendChild(document.createTextNode(event.city));
 			tr.appendChild(city);
 			
-			var date_start = document.createElement('th');
-			date_start.appendChild(document.createTextNode("Date"));
+			var date_start = document.createElement('td');
+			var date = new Date(event.date_start);
+			date_start.appendChild(document.createTextNode(date.toLocaleString(getLang(), {})));
 			tr.appendChild(date_start);
 			
 			tbdy.appendChild(tr);
-			
-			for (var i = 0; i < events.length; i++) {
-				var event = events[i];
-				var tr = document.createElement('tr');
-				
-				var name = document.createElement('td');
-				console.log(event);
-				if (event.link == "") {
-					name.appendChild(document.createTextNode(event.name));
-				} else {
-					var a = document.createElement('a');
-					a.appendChild(document.createTextNode(event.name));
-					a.title = event.name;
-					a.href = event.link;
-					document.body.appendChild(a);
-					name.appendChild(a);
-				}
-				tr.appendChild(name);
-				
-				var type = document.createElement('td');
-				type.appendChild(document.createTextNode(event.type != null ? event.type : ""));
-				tr.appendChild(type);
-			
-				var store = document.createElement('td');
-				store.appendChild(document.createTextNode(event.store));
-				tr.appendChild(store);
-				
-				var city = document.createElement('td');
-				city.appendChild(document.createTextNode(event.city));
-				tr.appendChild(city);
-				
-				var date_start = document.createElement('td');
-				var date = new Date(event.date_start);
-				date_start.appendChild(document.createTextNode(date.toLocaleString(getLang(), {})));
-				tr.appendChild(date_start);
-				
-				tbdy.appendChild(tr);
+		}
+		tbl.appendChild(tbdy);
+		main.appendChild(tbl);
+	}
+		
+	function processJson(json) {
+		var list = new Array();
+		for(var i = 0; i < json.results.length; i++) {
+			var store = json.results[i];
+			for(var j = 0; j < store.events.length; j++) {
+				var event = store.events[j];
+				list[list.length] = new Event(
+				                        store.name, 
+							store.city,
+				                        event.name, 
+							event.date_start, 
+							event.event_series,
+							event.link);
 			}
-			tbl.appendChild(tbdy);
-			demo.appendChild(tbl)
-			
 		}
 		
-		function processJson(json) {
-			console.log("processJson()");
-			var list = new Array();
-			for(var i = 0; i < json.results.length; i++) {
-				var store = json.results[i];
-				for(var j = 0; j < store.events.length; j++) {
-					var event = store.events[j];
-					list[list.length] = new Event(
-					                        store.name, 
-								store.city,
-					                        event.name, 
-								event.date_start, 
-								event.event_series,
-								event.link);
-				}
-			}
-			
-			list.sort(function (a, b) {
-				return ('' + a.date_start).localeCompare(b.date_start);
-			});
-			return list;
-		}
+		list.sort(function (a, b) {
+			return ('' + a.date_start).localeCompare(b.date_start);
+		});
+		return list;
+	}
 		
-		console.log(getLang());
-		
-		var url = '';
-		window.onload = load;
-	</script>
+	var url = '';
+	window.onload = load;
+  </script>
 </head>
 
 <body>
-	<div id="demo"></div>
+	<div id="main"></div>
 </body>
 </html>
