@@ -1,8 +1,20 @@
 table {
   border-collapse: collapse;
-  width: 100%;
 }
 
 table, th, td {
   border: 1px solid black;
+}
+
+th, td {
+	padding: 0.25em;
+}
+
+th {
+	background: black;
+	color: white;
+}
+
+.alnright { 
+	text-align: right; 
 }
