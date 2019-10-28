@@ -18,3 +18,6 @@ th {
 .alnright { 
 	text-align: right; 
 }
+
+body div {
+	padding-bottom: 1em;
