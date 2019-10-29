@@ -38,7 +38,9 @@
 			url = "https://retailers-backend.asmodeena.com/api/v1/stores/?location=" + position.coords.latitude + "," + position.coords.longitude + "&radius=" + radius;
 			doRestCall(url);
 		} else { 
-			document.getElementById("main").innerHTML = "Need to see your location.";
+			url = "https://retailers-backend.asmodeena.com/api/v1/stores/?location=40.7128,74.0060&radius=" + radius;
+			doRestCall(url);
+			document.getElementById("main").innerHTML = "This site requires access to your location.";
 		}
 	}
 		
