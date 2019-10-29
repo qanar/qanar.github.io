@@ -3,13 +3,13 @@
 <head>
   <link href="./styles.css" rel="stylesheet" type="text/css">
   <script data-ad-client="ca-pub-3948699876653144" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script type="text/javascript">	
-	var url = new URL(window.location.href);
-	var radius = url.searchParams.get("radius");
+  <script type="text/javascript">
+	var url;
+	var radius = new URL(window.location.href).searchParams.get("radius");
 	if (radius == null) {
 		radius = 50;
 	}
-		
+	
 	class Event {
 		constructor(store, city, name, date_start, type, link) {
 			this.store = store;
@@ -27,24 +27,61 @@
 		else 
 			return navigator.language;
 	}
+	
+	function showError(error) {
+		var p = document.createElement("p");
+		p.style.color = "red";
+		p.innerHTML = error;	
+		document.getElementById("main").appendChild(p); 
+	}
 		
 	function load() {
 		document.getElementById("radius_input").value = radius;
-		navigator.geolocation.getCurrentPosition(usePosition);
-	}
-		
-	function usePosition(position) {		
 		if (navigator.geolocation) {
-			url = "https://retailers-backend.asmodeena.com/api/v1/stores/?location=" + position.coords.latitude + "," + position.coords.longitude + "&radius=" + radius;
-			doRestCall(url);
-		} else { 
-			url = "https://retailers-backend.asmodeena.com/api/v1/stores/?location=40.7128,74.0060&radius=" + radius;
-			doRestCall(url);
-			document.getElementById("main").innerHTML = "This site requires access to your location.";
+			navigator.geolocation.getCurrentPosition(usePosition, showPositionError);
+		} else {
+			showError("Geolocation is not supported by this browser.");
+			useDefaultPosition();
 		}
 	}
 		
-	const doRestCall = async () => {			
+	function usePosition(position) {
+		callPosition(position.coords.latitude + "," + position.coords.longitude, radius);
+	}
+	
+	function useDefaultPosition() {
+		var p = document.createElement("p");
+		p.innerHTML = "Using default position of New York.";
+	
+		document.getElementById("main").appendChild(p); 
+		callPosition("40.7128,-74.0060", radius);
+	}
+	
+	function callPosition(latlon, radius) {
+		url = new URL("https://retailers-backend.asmodeena.com/api/v1/stores/?location=" + latlon + "&radius=" + radius);
+		doRestCall();
+	}
+	
+	function showPositionError(error) {
+		switch(error.code) {
+			case error.PERMISSION_DENIED:
+				showError("User denied the request for Geolocation.");
+				break;
+			case error.POSITION_UNAVAILABLE:
+				showError("Location information is unavailable.");
+				break;
+			case error.TIMEOUT:
+				showError("The request to get user location timed out.");
+				break;
+			case error.UNKNOWN_ERROR:
+				showError("An unknown error occurred.");
+				break;
+		}
+		useDefaultPosition();
+	}
+		
+	const doRestCall = async () => {
+		console.log(url);
 		const response = await fetch(url);
 		const myJson = await response.json();
 		var events = processJson(myJson);
@@ -164,10 +201,11 @@
 		</script>
 	</div>
 	
-	<div id="radius">
-		Look for events <input type="number" size="4" id="radius_input"/> miles around me. 
-		<button type="button" onclick="window.open('./index.html?radius=' + document.getElementById('radius_input').value, '_self');">Search</button>
+	<div id="main">
+		<p id="radius">
+			Look for events <input type="number" size="4" id="radius_input"/> miles around me. 
+			<button type="button" onclick="window.open('./index.html?radius=' + document.getElementById('radius_input').value, '_self');">Search</button>
+		</p>
 	</div>
-	<div id="main"></div>
 </body>
 </html>
