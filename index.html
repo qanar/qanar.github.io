@@ -100,6 +100,10 @@
 		name.appendChild(document.createTextNode("Name"));
 		tr.appendChild(name);
 			
+		var date_start = document.createElement('th');
+		date_start.appendChild(document.createTextNode("Date"));
+		tr.appendChild(date_start);
+			
 		var type = document.createElement('th');
 		type.appendChild(document.createTextNode("Event Type"));
 		tr.appendChild(type);
@@ -111,10 +115,6 @@
 		var city = document.createElement('th');
 		city.appendChild(document.createTextNode("City"));
 		tr.appendChild(city);
-			
-		var date_start = document.createElement('th');
-		date_start.appendChild(document.createTextNode("Date"));
-		tr.appendChild(date_start);
 			
 		tbdy.appendChild(tr);
 			
@@ -134,6 +134,12 @@
 				name.appendChild(a);
 			}
 			tr.appendChild(name);
+			
+			var date_start = document.createElement('td');
+			date_start.classList.add('alnright');
+			var date = new Date(event.date_start);
+			date_start.appendChild(document.createTextNode(date.toLocaleString(getLang(), {})));
+			tr.appendChild(date_start);
 				
 			var type = document.createElement('td');
 			type.appendChild(document.createTextNode(event.type != null ? event.type : ""));
@@ -146,12 +152,6 @@
 			var city = document.createElement('td');
 			city.appendChild(document.createTextNode(event.city));
 			tr.appendChild(city);
-			
-			var date_start = document.createElement('td');
-			date_start.classList.add('alnright');
-			var date = new Date(event.date_start);
-			date_start.appendChild(document.createTextNode(date.toLocaleString(getLang(), {})));
-			tr.appendChild(date_start);
 			
 			tbdy.appendChild(tr);
 		}
